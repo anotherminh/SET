@@ -1,0 +1,91 @@
+.app {
+  background-color: aliceblue;
+  width: 1000px;
+  height: 610px;
+  margin: 40px auto;
+  position: relative;
+}
+
+.title {
+  font-size: 72px;
+  text-align: center;
+  margin-bottom: -40px;
+}
+
+.cards-container {
+  position: absolute;
+  width: 1000px;
+  left: 0px;
+  padding: 10px;
+}
+
+.card {
+  float: left;
+  margin: 10px;
+  padding: 10px;
+  width: 120px;
+  height: 160px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+.symbol {
+  position: relative;
+  width: 200px;
+  height: 45px;
+}
+
+.triangle {
+  width: 0;
+	height: 0;
+	border-left: 20px solid transparent;
+	border-right: 20px solid transparent;
+
+	border-bottom: 40px solid white;
+}
+
+.square {
+  border: 1px solid black;
+  width: 40px;
+  height: 40px;
+}
+
+.hexagon:before {
+    content: " ";
+    width: 0; height: 0;
+    border-bottom: 40px solid #6C6;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    position: absolute;
+    top: -30px;
+}
+
+.hexagon {
+    margin-top: 30px;
+    width: 40px;
+    height: 40px;
+    background-color: #6C6;
+    position: relative;
+}
+
+.hexagon:after {
+    content: "";
+    width: 0;
+    position: absolute;
+    bottom: -30px;
+    border-top: 40px solid #6C6;
+    border-left:  20px solid transparent;
+    border-right: 20px solid transparent;
+}
+
+.tomato {
+  background-color: tomato;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.blue {
+  background-color: blue;
+}
