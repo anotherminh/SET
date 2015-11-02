@@ -48,7 +48,7 @@ Card.prototype.buildSets = function () {
   var allPairs = this.allPairs.slice();
   var pickedPairs = [];
 
-  var numPairs = _getRandomInt(2, 4);
+  var numPairs = _getRandomInt(2, 5);
   this.setsCount = numPairs;
 
   for (var i = 0; i < numPairs; i++) {
@@ -62,7 +62,7 @@ Card.prototype.buildSets = function () {
     return pair;
   }.bind(this))
 
-  return this.removeDuplicates(sets);
+  return sets;
 }
 
 Card.prototype.removeDuplicates = function (sets) {
@@ -84,6 +84,7 @@ Card.prototype.findThirdCard = function (pair) {
   for (var i = 0; i < 4; i++) {
     var symbol1 = firstCard[i];
     var symbol2 = secondCard[i];
+
     if (symbol1 === symbol2) {
       thirdCard += symbol1;
     } else {
@@ -113,7 +114,7 @@ Card.prototype.findThirdCard = function (pair) {
 }
 
 Card.prototype.getPlayableCards = function () {
-  var playableCards = this.sets;
+  var playableCards = this.removeDuplicates(this.sets);
   var dupDeck = this.allCards.slice();
 
   while (playableCards.length < 12) {

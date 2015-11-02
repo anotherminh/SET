@@ -1,39 +1,75 @@
 window.App = React.createClass({
   getInitialState: function () {
     return {
-            sets: this.props.cards.playableDeck.length,
-            setsFound: 0,
+            setsCount: this.props.cards.setsCount,
+            setsFound: [],
             buildingSet: [],
-            notif: ""
+            showNotif: false,
+            notif: "",
+            gameWon: false
            }
+  },
+
+  gameWon: function () {
+    if (this.state.setsFound.length == this.state.setsCount) {
+      return true;
+    } else {
+      return false;
+    }
   },
 
   checkCurrentSet: function () {
     var set = this.state.buildingSet;
-    if (set.length === 3) {
-      var card1 = set[0],
-      card2 = set[1],
-      card3 = set[2],
-      isASet = true;
+    var card1 = set[0],
+    card2 = set[1],
+    card3 = set[2],
+    isASet = true,
+    duplicate: false;
 
-      for (var i = 0; i < card1.length; i++) {
-        if (!(card1[i] === card2[i]) && (card2[i] === card3[i])) {
-          isASet = false;
-        } else if (!(card1[i] !== card2[i]) &&
-                  ((card2[i] !== card3[i]) && (card1[i] !== card3[i]))) {
-                    isASet = false;
-                  }
+    for (var i = 0; i < card1.length; i++) {
+      if (
+        !((card1[i] === card2[i]) && (card2[i] === card3[i])) &&
+        !((card1[i] !== card2[i]) &&
+        ((card2[i] !== card3[i]) && (card1[i] !== card3[i])))
+      ) {
+        isASet = false;
       }
+    }
 
-      if (isASet) {
-        // alert or something instead of console log
-        console.log("found set");
-        //check also to see if the player has won!
-        this.setState({ setsFound: this.state.setsFound + 1, buildingSet: [] });
+    this.state.setsFound.forEach(function (oldSet) {
+      if (oldSet.sort().toString() === set.sort().toString()) {
+        duplicate = true;
+        isASet = false;
+      }
+    })
+
+    console.log(set + " / " + isASet);
+    this.handleCurrentSetStatus(isASet, duplicate);
+  },
+
+  handleCurrentSetStatus: function (status, dup) {
+    if (status) {
+      this.state.setsFound.push(this.state.buildingSet);
+      var gameStatus = this.gameWon();
+      this.setState({
+        buildingSet: [],
+        showNotif: true,
+        notif: "Found a set!",
+        gameWon: gameStatus
+      });
+    } else {
+      var notif;
+      if (dup) {
+        notif = "You already found that set.";
       } else {
-        console.log("not set");
-        this.setState({ buildingSet: [] });
+        notif = "That's not a set.";
       }
+
+      this.setState({
+        buildingSet: [],
+        showNotif: true,
+        notif: notif
+      });
     }
   },
 
@@ -42,6 +78,7 @@ window.App = React.createClass({
     if (this.state.buildingSet.length === 3) {
       this.checkCurrentSet();
     } else {
+      this.state.showNotif = false;
       this.forceUpdate();
     }
   },
@@ -52,10 +89,46 @@ window.App = React.createClass({
     this.forceUpdate();
   },
 
+  renderModal: function () {
+    if (this.state.gameWon) {
+      return <Modal message="You won!"/>
+    }
+  },
+
+  renderNotif: function () {
+    var notifClass;
+    if (this.state.showNotif) {
+      notifClass = "notif show-notif";
+    } else {
+      notifClass = "notif hide-notif";
+    }
+
+    return notifClass;
+  },
+
+  showInstructions: function () {
+    this.setState({ showInstructions: true });
+  },
+
+  turnOffInstructions: function () {
+    this.setState({ showInstructions: false });
+  },
+
+  renderInstructions: function () {
+    if (this.state.showInstructions) {
+      return <Instruction turnOffInstructions={this.turnOffInstructions}/>
+    }
+  },
+
   render: function () {
     return (
       <div className="app">
-        Found {this.state.setsFound} set(s) out of {this.props.cards.setsCount}.
+        <div className="game-stats">
+          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.props.cards.setsCount}.
+        </div>
+        <div className={this.renderNotif()}>{this.state.notif}</div>
+        {this.renderModal()}
+        {this.renderInstructions()}
         <div className="cards-container">
           {
             this.props.cards.playableDeck.map(function (card, idx) {
@@ -67,7 +140,8 @@ window.App = React.createClass({
             }.bind(this))
           }
         </div>
-        <div className="sets-found">
+        <div className="how-to-play" onClick={this.showInstructions}>
+          How To Play Set
         </div>
       </div>
     );

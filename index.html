@@ -9,18 +9,31 @@
     <script type="text/javascript" src="./card.js"></script>
     <script type="text/babel" src="./symbol.js.jsx"></script>
     <script type="text/babel" src="./card.js.jsx"></script>
+    <script type="text/babel" src="./instruction.js.jsx"></script>
+    <script type="text/babel" src="./modal.js.jsx"></script>
     <script type="text/babel" src="./app.js.jsx"></script>
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Slab' rel='stylesheet' type='text/css'>
     <title>SET</title>
   </head>
   <body>
     <div id="app-container"></div>
     <script type="text/babel">
-      var cards = new Card ();
+      window.cards = new Card ();
 
-      ReactDOM.render(
-        <App cards={cards}/>,
-        document.getElementById('app-container')
-      );
+      window.startGame = function () {
+        ReactDOM.render(
+          <App cards={cards}/>,
+          document.getElementById('app-container')
+        )
+      }
+
+      window.restartGame = function () {
+        ReactDOM.unmountComponentAtNode(document.getElementById('app-container'));
+        window.cards = new Card ();
+        window.startGame();
+      }
+
+      window.startGame();
     </script>
   </body>
 </html>
