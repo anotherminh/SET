@@ -1,9 +1,10 @@
 var _SHAPES = ["A", "B", "C"]
-var _FILLS = ["M", "L", "N"]
+var _FILLS = ["L", "M", "N"]
 var _COLORS = ["X", "Y", "Z"]
 var _COUNTS = [1, 2, 3]
 
 window.Card = function () {
+  this.setsCount = 0;
   this.allCards = Card.generateCards();
   this.allPairs = this.generateAllPairs();
   this.sets = this.buildSets();
@@ -48,6 +49,7 @@ Card.prototype.buildSets = function () {
   var pickedPairs = [];
 
   var numPairs = _getRandomInt(2, 4);
+  this.setsCount = numPairs;
 
   for (var i = 0; i < numPairs; i++) {
     var cardIdx = _getRandomInt(0, 3240);
@@ -65,11 +67,10 @@ Card.prototype.buildSets = function () {
 
 Card.prototype.removeDuplicates = function (sets) {
   var cardCounts = {};
+  var flattened = [].concat.apply([], sets);
 
-  sets.forEach(function (set) {
-    set.forEach(function (card) {
-      cardCounts[card] = 1;
-    })
+  flattened.forEach(function (card) {
+    cardCounts[card] = 1;
   })
 
   return Object.keys(cardCounts);
@@ -112,14 +113,15 @@ Card.prototype.findThirdCard = function (pair) {
 }
 
 Card.prototype.getPlayableCards = function () {
-  var playableDeck = [].concat.apply([], this.sets);
+  var playableCards = this.sets;
   var dupDeck = this.allCards.slice();
 
-  while (playableDeck.length < 12) {
+  while (playableCards.length < 12) {
     randomIdx = _getRandomInt(0, this.allCards.length);
-    randomCard = dupDeck.splice(randomIdx, 1);
-    playableDeck.push(randomCard);
+    randomCard = dupDeck.splice(randomIdx, 1)[0];
+    playableCards.push(randomCard);
+    playableCards = this.removeDuplicates(playableCards);
   }
 
-  return playableDeck;
+  return playableCards.sort(function() { return 0.5 - Math.random() });;
 }

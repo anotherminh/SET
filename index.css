@@ -1,91 +1,82 @@
+body {
+  /*background-color: wheat;*/
+}
+
 .app {
-  background-color: aliceblue;
-  width: 1000px;
+  width: 1200px;
   height: 610px;
   margin: 40px auto;
   position: relative;
 }
 
 .title {
-  font-size: 72px;
+  font-size: 36px;
   text-align: center;
   margin-bottom: -40px;
 }
 
 .cards-container {
   position: absolute;
-  width: 1000px;
+  width: 1200px;
   left: 0px;
   padding: 10px;
 }
 
 .card {
   float: left;
+  position: relative;
   margin: 10px;
   padding: 10px;
-  width: 120px;
+  width: 252px;
   height: 160px;
-  border: 1px solid black;
   border-radius: 10px;
+  text-align: center;
+  opacity: 1;
+}
+
+.card:hover {
+  cursor: pointer;
+  filter: grayscale(1);
+}
+
+.card:active {
+  filter: grayscale(0);
+}
+
+.on {
+  background: white;
+  opacity: .5;
+}
+
+.card-wrapper {
+  float: left;
+  position: relative;
+  margin: 10px;
+  padding: 10px;
+  width: 252px;
+  height: 160px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.card-wrapper:hover {
+  background: white;
+  opacity: .5;
 }
 
 .symbol {
+  z-index: 2;
+  display: inline-block;
+  width: 80px;
+  height: 80px;
   position: relative;
-  width: 200px;
-  height: 45px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.triangle {
-  width: 0;
-	height: 0;
-	border-left: 20px solid transparent;
-	border-right: 20px solid transparent;
-
-	border-bottom: 40px solid white;
-}
-
-.square {
-  border: 1px solid black;
-  width: 40px;
-  height: 40px;
-}
-
-.hexagon:before {
-    content: " ";
-    width: 0; height: 0;
-    border-bottom: 40px solid #6C6;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    position: absolute;
-    top: -30px;
-}
-
-.hexagon {
-    margin-top: 30px;
-    width: 40px;
-    height: 40px;
-    background-color: #6C6;
-    position: relative;
-}
-
-.hexagon:after {
-    content: "";
-    width: 0;
-    position: absolute;
-    bottom: -30px;
-    border-top: 40px solid #6C6;
-    border-left:  20px solid transparent;
-    border-right: 20px solid transparent;
-}
-
-.tomato {
-  background-color: tomato;
-}
-
-.yellow {
-  background-color: yellow;
-}
-
-.blue {
-  background-color: blue;
+.fill {
+  border-radius: 10px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
