@@ -14,7 +14,7 @@ Examples of sets:
 These are not sets:
 (examples)
 
-###Fun facts about the game, and how it was built:
+###Fun Facts About the Game:
 Set is a real-time card game designed by Marsha Falco in 1974 and published by Set Enterprises in 1991.
 
 The largest group of cards you can put together without creating a set is 20.
@@ -23,22 +23,60 @@ There are 1080 unique sets.
 
 Given ANY pair of card, there is a unique third card that makes a set.
 
-This last fact was crucial to building the game. To generate a new puzzle, we do the following:
+###How the Game was Built:
+To generate the puzzle, I randomly drew twelve cards from the deck,
+and check to see if the twelve random cards contained any valid set.
+If so, we 'deal' the cards to the user. If not, we run the function again:
 
-1) Generate 2-5 distinct pairs (the pairs can share at most one card with each other).
+<pre><code>
+Deck.prototype.getTwelveCards = function () {
+  var playableDeck = [], allCards = Deck.allCards();
 
-2) Finish the set by generating the third member for every pair.The process of generating the third member is pretty straight forward:
+  for (var i = 0; i < 12; i++) {
+    randomIdx = Math.floor(Math.random() * allCards.length);
+    playableDeck.push(allCards.splice(randomIdx, 1)[0]);
+  }
 
-- a) Compare every feature of the pair, assigning 0 if different, and 1 if similar.
-- b) If 0, then pick the feature that isn’t the same as that feature.
-- c) If 1, then pick the feature that is the same.
+  var solution = Deck.solve(playableDeck);
+  if (solution.length > 0) {
+    this.solution = solution;
+    return playableDeck;
+  } else {
+    debugger;
+    return this.getTwelveCards().bind(this);
+  }
+}
+</pre></code>
 
-3) If we have less than 12 cards, then add random cards to the pile (but these have to NOT create new pairs, because we want to keep track of how many solutions there are to inform the player that the game is over).
+To check to see if the cards contain any sets, I wrote a 'solve' function.
+It's a naive solution, with a horrendous n! running time, but I figured
+that was ok because I only want to give the user 12 cards at a time
+(that's only 220 things to look through). Here's the code:
 
-Add this card to the pair, and we have a set.
+<pre><code>
+Deck.prototype.getTwelveCards = function () {
+  var playableDeck = [], allCards = Deck.allCards();
 
-Remove any  duplicates.
+  for (var i = 0; i < 12; i++) {
+    randomIdx = Math.floor(Math.random() * allCards.length);
+    playableDeck.push(allCards.splice(randomIdx, 1)[0]);
+  }
 
-Then add random cards to the pile until we have 12.
+  var solution = Deck.solve(playableDeck);
+  if (solution.length > 0) {
+    this.solution = solution;
+    return playableDeck;
+  } else {
+    debugger;
+    return this.getTwelveCards().bind(this);
+  }
+}
+</pre></code>
 
-Shuffle and play!
+The front end of this project presented an interesting aesthetic challenge as well.
+The original design was nice and simple, but I wanted to give the game a fresh look.
+The problem, then, was how to use HTML & CSS to generate all the possible cards
+without having to actually photoshop/create all 81 of them.  
+
+In the end, I only had to manually create the 9 different combinations of pepper + color (there are 3 different peppers, and 3 colors, so 9 combinations). I generate the
+background color and the number of peppers based on the fly, and center them as appropriate.
