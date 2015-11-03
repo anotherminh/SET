@@ -1,7 +1,6 @@
 window.App = React.createClass({
   getInitialState: function () {
     return {
-            setsCount: this.props.cards.setsCount,
             setsFound: [],
             buildingSet: [],
             showNotif: false,
@@ -11,7 +10,7 @@ window.App = React.createClass({
   },
 
   gameWon: function () {
-    if (this.state.setsFound.length == this.state.setsCount) {
+    if (this.state.setsFound.length == this.props.cards.solution.length) {
       return true;
     } else {
       return false;
@@ -19,22 +18,9 @@ window.App = React.createClass({
   },
 
   checkCurrentSet: function () {
-    var set = this.state.buildingSet;
-    var card1 = set[0],
-    card2 = set[1],
-    card3 = set[2],
-    isASet = true,
-    duplicate: false;
-
-    for (var i = 0; i < card1.length; i++) {
-      if (
-        !((card1[i] === card2[i]) && (card2[i] === card3[i])) &&
-        !((card1[i] !== card2[i]) &&
-        ((card2[i] !== card3[i]) && (card1[i] !== card3[i])))
-      ) {
-        isASet = false;
-      }
-    }
+    var set = this.state.buildingSet,
+    duplicate = false,
+    isASet = window.Deck.isASet(set);
 
     this.state.setsFound.forEach(function (oldSet) {
       if (oldSet.sort().toString() === set.sort().toString()) {
@@ -43,7 +29,6 @@ window.App = React.createClass({
       }
     })
 
-    console.log(set + " / " + isASet);
     this.handleCurrentSetStatus(isASet, duplicate);
   },
 
@@ -121,17 +106,18 @@ window.App = React.createClass({
   },
 
   render: function () {
+    var totalSets = this.props.cards.solution.length;
     return (
       <div className="app">
         <div className="game-stats">
-          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.props.cards.setsCount}.
+          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {totalSets}.
         </div>
         <div className={this.renderNotif()}>{this.state.notif}</div>
         {this.renderModal()}
         {this.renderInstructions()}
         <div className="cards-container">
           {
-            this.props.cards.playableDeck.map(function (card, idx) {
+            this.props.cards.playableCards.map(function (card, idx) {
               return <CardComponent key={idx}
                                     card={card}
                                     selectedCards={this.state.buildingSet}

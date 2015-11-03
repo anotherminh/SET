@@ -18,7 +18,7 @@
   <body>
     <div id="app-container"></div>
     <script type="text/babel">
-      window.cards = new Card ();
+      window.cards = new Deck ();
 
       window.startGame = function () {
         ReactDOM.render(
@@ -29,7 +29,7 @@
 
       window.restartGame = function () {
         ReactDOM.unmountComponentAtNode(document.getElementById('app-container'));
-        window.cards = new Card ();
+        window.cards = new Deck ();
         window.startGame();
       }
 

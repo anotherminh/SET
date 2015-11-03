@@ -3,126 +3,78 @@ var _FILLS = ["L", "M", "N"]
 var _COLORS = ["X", "Y", "Z"]
 var _COUNTS = [1, 2, 3]
 
-window.Card = function () {
-  this.setsCount = 0;
-  this.allCards = Card.generateCards();
-  this.allPairs = this.generateAllPairs();
-  this.sets = this.buildSets();
-  this.playableDeck = this.getPlayableCards();
-};
-
-// generates random int. between min (inclusive) and max (exclusive)
-var _getRandomInt = window._getRandomInt = function (min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+var Deck = function () {
+  this.solution = [];
+  this.playableCards = this.getTwelveCards();
 }
 
-Card.generateCards = function () {
-  var cards = [];
+Deck.isASet = function (threeCards) {
+  var isASet = true,
+  card1 = threeCards[0],
+  card2 = threeCards[1],
+  card3 = threeCards[2];
+
+  for (var i = 0; i < 4; i++) {
+    if (
+      !((card1[i] === card2[i] && card2[i] === card3[i]) && card1[i] === card3[i]) &&
+      !((card1[i] !== card2[i] && card2[i] !== card3[i]) && card1[i] !== card3[i])
+    ) {
+      isASet = false;
+    }
+  }
+
+  return isASet;
+}
+
+Deck.allCards = function () {
+  var allCards = [];
   _SHAPES.forEach(function (shape) {
     _FILLS.forEach(function (fill) {
       _COLORS.forEach(function (color) {
         _COUNTS.forEach(function (count) {
-          cards.push(shape + fill + color + count);
+          allCards.push(shape + fill + color + count);
         })
       })
     })
   })
 
-  return cards;
+  return allCards;
 }
 
-Card.prototype.generateAllPairs = function () {
-  var deck = this.allCards;
-  var _allPairs = [];
-
-  deck.forEach(function (card1) {
-    deck.forEach(function (card2) {
-      _allPairs.push([card1, card2]);
-    })
-  })
-
-  return _allPairs;
-}
-
-Card.prototype.buildSets = function () {
-  var allPairs = this.allPairs.slice();
-  var pickedPairs = [];
-
-  var numPairs = _getRandomInt(2, 5);
-  this.setsCount = numPairs;
-
-  for (var i = 0; i < numPairs; i++) {
-    var cardIdx = _getRandomInt(0, 3240);
-    pickedPairs.push(allPairs.splice(cardIdx, 1)[0]);
-  }
-
-  var sets = pickedPairs.map(function (pair) {
-    var thirdCard = this.findThirdCard(pair);
-    pair.push(thirdCard);
-    return pair;
-  }.bind(this))
-
-  return sets;
-}
-
-Card.prototype.removeDuplicates = function (sets) {
-  var cardCounts = {};
-  var flattened = [].concat.apply([], sets);
-
-  flattened.forEach(function (card) {
-    cardCounts[card] = 1;
-  })
-
-  return Object.keys(cardCounts);
-}
-
-Card.prototype.findThirdCard = function (pair) {
-  var firstCard = pair[0];
-  var secondCard = pair[1];
-  var thirdCard = "";
-
-  for (var i = 0; i < 4; i++) {
-    var symbol1 = firstCard[i];
-    var symbol2 = secondCard[i];
-
-    if (symbol1 === symbol2) {
-      thirdCard += symbol1;
-    } else {
-      switch (i) {
-        case 0:
-          var type = _SHAPES.slice();
-          break;
-        case 1:
-          var type = _FILLS.slice();
-          break;
-        case 2:
-          var type = _COLORS.slice();
-          break;
-        case 3:
-          var type = _COUNTS.slice();
-          break;
+Deck.solve = function (cards) {
+  var solutions = [];
+  for (var i = 0; i < (cards.length - 2); i++) {
+    for (var j = i + 1; j < (cards.length - 1); j++) {
+      for (var k = j; k < cards.length; k++) {
+        var threeCards = [cards[i], cards[j], cards[k]]
+        if (Deck.isASet(threeCards)) {
+          solutions.push(threeCards);
         }
-
-      type.splice(type.indexOf(symbol1), 1);
-      type.splice(type.indexOf(symbol2), 1);
-
-      thirdCard += type[0];
+      }
     }
   }
-
-  return thirdCard;
+  return solutions;
 }
 
-Card.prototype.getPlayableCards = function () {
-  var playableCards = this.removeDuplicates(this.sets);
-  var dupDeck = this.allCards.slice();
+Deck.prototype.getTwelveCards = function () {
+  var playableDeck = [], allCards = Deck.allCards();
 
-  while (playableCards.length < 12) {
-    randomIdx = _getRandomInt(0, this.allCards.length);
-    randomCard = dupDeck.splice(randomIdx, 1)[0];
-    playableCards.push(randomCard);
-    playableCards = this.removeDuplicates(playableCards);
+  for (var i = 0; i < 12; i++) {
+    randomIdx = Math.floor(Math.random() * allCards.length);
+    playableDeck.push(allCards.splice(randomIdx, 1)[0]);
   }
 
-  return playableCards.sort(function() { return 0.5 - Math.random() });;
+  var solution = Deck.solve(playableDeck);
+  if (solution.length > 0) {
+    this.solution = solution;
+    return playableDeck;
+  } else {
+    debugger;
+    return this.getTwelveCards().bind(this);
+  }
 }
+
+// var three = [ [ 'CMZ1' ], [ 'AMY1' ], [ 'CLX2' ] ];
+// var cards = new Deck ();
+// console.log(Deck.isASet(three));
+// console.log(cards.solution.length);
