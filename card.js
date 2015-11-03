@@ -69,7 +69,6 @@ Deck.prototype.getTwelveCards = function () {
     this.solution = solution;
     return playableDeck;
   } else {
-    debugger;
     return this.getTwelveCards().bind(this);
   }
 }
