@@ -1,10 +1,8 @@
-// TODO: detect when the peppers have fallen off the screen and pull them out of the parade
-
 var PEPPER_MAX_SPEED = 6;
 var PEPPER_MAX_DRIFT = 2;
 // determines density - lower = more peppers for your party
 var PIXELS_PER_PEPPER = 30;
-var SECONDS_PER_BURST = 1.5;
+var SECONDS_PER_BURST = 1.2;
 var CANVAS;
 var PARADE;
 
@@ -100,10 +98,19 @@ Parade.prototype.addPeppers = function(){
 };
 
 Parade.prototype.click = function(){
-  var that = this;
-  that.moveAll();
-  that.ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
-  that.drawAll();
+  this.moveAll();
+  this.ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
+  this.drawAll();
+};
+
+Parade.prototype.removePepper = function(pepper) {
+  // this.peppers.forEach(function(pepper, idx){
+  //   if (this.outOfBounds(pepper)) {
+  //     this.peppers.splice(idx);
+  //   }
+  // }.bind(this));
+  var index = this.peppers.indexOf(pepper);
+  this.peppers.splice(index, 1);
 };
 
 Parade.prototype.moveAll = function(){
@@ -135,7 +142,7 @@ var makeRandomPeppers = function(n, ctx) {
   pepperImages.forEach(function(pepper, idx) {
     var pepperOptions = {
       img: PEPPER_IMGS[pepper],
-      pos: [(35 * idx), -15],
+      pos: [(35 * idx), - PEPPER_IMGS[pepper].height],
       ctx: ctx,
       speed: Math.floor(Math.random() * PEPPER_MAX_SPEED) + 1,
       drift: Math.random() < 0.5 ? -1 : 1
@@ -153,6 +160,12 @@ var Pepper = function(options) {
   this.drift = options.drift;
 };
 
+Pepper.prototype.outOfBounds = function() {
+  if (this.pos[1] > (CANVAS.height - this.img.height)) {
+    return true;
+  } else { return false; }
+};
+
 Pepper.prototype.draw = function() {
   this.ctx.drawImage(this.img, this.pos[0], this.pos[1]);
 };
@@ -162,6 +175,9 @@ Pepper.prototype.move = function() {
   this.pos[1] += this.speed;
   // randomly also move left or right or not at all
   this.pos[0] += randomX() * this.drift;
+  if (this.outOfBounds()) {
+    PARADE.removePepper(this);
+  }
 };
 
 var randomX = function() {

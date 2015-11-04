@@ -58,7 +58,7 @@ window.App = React.createClass({
     }
   },
 
-  handleClick: function (cardValue) {
+  handleClick: function (cardValue) { 
     this.state.buildingSet.push(cardValue);
     if (this.state.buildingSet.length === 3) {
       this.checkCurrentSet();
