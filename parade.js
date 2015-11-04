@@ -1,3 +1,43 @@
+// TODO: detect when the peppers have fallen off the screen and take them out of the parade
+
+function createCanvasOverlay()
+ {
+   // code is from http://permadi.com/2009/04/usng-html-5-canvas-to-draw-over-my-web-page-part-2/
+   // Create a blank div where we are going to put the canvas into.
+    var canvasContainer = document.createElement('div');
+   // Add the div into the document
+    document.body.appendChild(canvasContainer);
+    canvasContainer.style.position="absolute";
+    // Set to 100% so that it will have the dimensions of the document
+    canvasContainer.style.left="0px";
+    canvasContainer.style.top="0px";
+    canvasContainer.style.width="100%";
+    canvasContainer.style.height="100%";
+    // Set to high index so that this is always above everything else
+    // (might need to be increased if you have other element at higher index)
+    canvasContainer.style.zIndex="1000";
+    // Now we create the canvas
+    myCanvas = document.createElement('canvas');
+    myCanvas.style.width = canvasContainer.scrollWidth+"px";
+    myCanvas.style.height = canvasContainer.scrollHeight+"px";
+    // You must set this otherwise the canvas will be streethed to fit the container
+    myCanvas.width=canvasContainer.scrollWidth;
+    myCanvas.height=canvasContainer.scrollHeight;
+    myCanvas.style.overflow = 'visible';
+    myCanvas.style.position = 'absolute';
+    // Add int into the container
+    canvasContainer.appendChild(myCanvas);
+    return myCanvas;
+ }
+
+var canvas;
+
+ var startParade = function(){
+   canvas = createCanvasOverlay();
+   var ctx = canvas.getContext("2d");
+   new Parade(ctx).start();
+ };
+
 var Parade = function(ctx) {
   this.ctx = ctx;
   this.peppers = [];
@@ -15,7 +55,6 @@ var loadImages = function() {
     });
   });
 };
-
 
 Parade.prototype.start = function(){
   var that = this;
@@ -53,25 +92,10 @@ Parade.prototype.drawAll = function(){
     pepper.draw();
   });
 };
-//
-// var setupCanvas = function() {
-//   var canvas = document.getElementById("game-canvas");
-//   var ctx = canvas.getContext("2d");
-//   canvas.width = window.innerWidth;
-//   canvas.height = window.innerHeight;
-//   return ctx;
-// };
-
-var paradeClick = function() {
-// clear canvas
-// move
-// draw
-};
-
-
 
 // returns an array of n peppers of randomized colors/shapes in string format
 // takes a reference to the ctx to pass to peppers & to determing starting pos
+// this function is too long right meow
 var makeRandomPeppers = function(n, ctx) {
   var pepperImages = [];
   for (var i = 0; i < n; i++) {
@@ -81,6 +105,8 @@ var makeRandomPeppers = function(n, ctx) {
   }
   var peppers = [];
   // peppers start at the top and are evenly distributed across width of canvas
+  // they have a random speed (downward movement of pixels per second)
+  // and a random drift on the x-axis (moving either left or right)
   pepperImages.forEach(function(pepper, idx) {
     var pepperOptions = {
       img: PEPPER_IMGS[pepper],
@@ -94,7 +120,6 @@ var makeRandomPeppers = function(n, ctx) {
   return peppers;
 };
 
-// takes color/shape string, starting pos, and ctx reference
 var Pepper = function(options) {
   this.img = options.img;
   this.pos = options.pos;
