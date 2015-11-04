@@ -80,3 +80,8 @@ without having to actually photoshop/create all 81 of them.
 
 In the end, I only had to manually create the 9 different combinations of pepper + color (there are 3 different peppers, and 3 colors, so 9 combinations). I generate the
 background color and the number of peppers based on the fly, and center them as appropriate.
+
+###Todos:
+- [ ] "I give up" button that will reveal the sets to the player.
+- [ ] In one-player mode, sets that are found will disappear and be replaced with random cards from the deck.
+- [ ] Multi-player mode.
