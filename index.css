@@ -106,7 +106,7 @@ body {
   display: inline-block;
   font-family: 'Josefin Slab', sans-serif;
   font-size: 20px;
-  color: #ccc;
+  color: grey;
   position: absolute;
   right: 10px;
 }
@@ -188,7 +188,7 @@ body {
 .how-to-play {
   font-family: "Josefin Slab",sans-serif;
   font-size: 20px;
-  color: #ccc;
+  color: grey;
   position: absolute;
   top: 0px;
   left: 543px;
