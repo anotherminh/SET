@@ -142,7 +142,7 @@ var makeRandomPeppers = function(n, ctx) {
   pepperImages.forEach(function(pepper, idx) {
     var pepperOptions = {
       img: PEPPER_IMGS[pepper],
-      pos: [(35 * idx), - PEPPER_IMGS[pepper].height],
+      pos: [(PIXELS_PER_PEPPER * idx), - PEPPER_IMGS[pepper].height],
       ctx: ctx,
       speed: Math.floor(Math.random() * PEPPER_MAX_SPEED) + 1,
       drift: Math.random() < 0.5 ? -1 : 1
@@ -161,7 +161,7 @@ var Pepper = function(options) {
 };
 
 Pepper.prototype.outOfBounds = function() {
-  if (this.pos[1] > (CANVAS.height - this.img.height)) {
+  if (this.pos[1] > (CANVAS.height + this.img.height)) {
     return true;
   } else { return false; }
 };
