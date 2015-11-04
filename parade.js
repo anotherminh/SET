@@ -1,4 +1,12 @@
-// TODO: detect when the peppers have fallen off the screen and take them out of the parade
+// TODO: detect when the peppers have fallen off the screen and pull them out of the parade
+
+var PEPPER_MAX_SPEED = 6;
+var PEPPER_MAX_DRIFT = 2;
+// determines density - lower = more peppers for your party
+var PIXELS_PER_PEPPER = 30;
+var SECONDS_PER_BURST = 1.5;
+var CANVAS;
+var PARADE;
 
 function createCanvasOverlay()
  {
@@ -15,7 +23,7 @@ function createCanvasOverlay()
     canvasContainer.style.height="100%";
     // Set to high index so that this is always above everything else
     // (might need to be increased if you have other element at higher index)
-    canvasContainer.style.zIndex="1000";
+    canvasContainer.style.zIndex="5";
     // Now we create the canvas
     myCanvas = document.createElement('canvas');
     myCanvas.style.width = canvasContainer.scrollWidth+"px";
@@ -30,12 +38,24 @@ function createCanvasOverlay()
     return myCanvas;
  }
 
-var canvas;
+ function hideCanvas()
+ {
+    if (myCanvas)
+    {
+      //myCanvas.style.visibility='hidden';
+      myCanvas.parentNode.style.visibility='hidden';
+    }
+ }
 
  var startParade = function(){
-   canvas = createCanvasOverlay();
-   var ctx = canvas.getContext("2d");
-   new Parade(ctx).start();
+   CANVAS = createCanvasOverlay();
+   var ctx = CANVAS.getContext("2d");
+   PARADE = new Parade(ctx);
+   PARADE.start();
+ };
+
+ var stopParade = function(){
+   PARADE.stop();
  };
 
 var Parade = function(ctx) {
@@ -59,25 +79,30 @@ var loadImages = function() {
 Parade.prototype.start = function(){
   var that = this;
   loadImages();
-  that.peppers = makeRandomPeppers(canvas.width / 30, that.ctx);
+  that.addPeppers();
   var clickInt = setInterval(function(){
     that.click();
   }, 20);
   var rainInt = setInterval(function(){
-    that.addMorePeppers();
-  }, 1500);
+    that.addPeppers();
+  }, SECONDS_PER_BURST * 1000);
 };
 
-Parade.prototype.addMorePeppers = function(){
+Parade.prototype.stop = function() {
+  this.peppers = [];
+  hideCanvas();
+};
+
+Parade.prototype.addPeppers = function(){
   var that = this;
-  var newPeppers = makeRandomPeppers(canvas.width / 30, that.ctx);
+  var newPeppers = makeRandomPeppers(CANVAS.width / PIXELS_PER_PEPPER, that.ctx);
   that.peppers = that.peppers.concat(newPeppers);
 };
 
 Parade.prototype.click = function(){
   var that = this;
   that.moveAll();
-  that.ctx.clearRect(0,0,canvas.width,canvas.height);
+  that.ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
   that.drawAll();
 };
 
@@ -112,7 +137,7 @@ var makeRandomPeppers = function(n, ctx) {
       img: PEPPER_IMGS[pepper],
       pos: [(35 * idx), -15],
       ctx: ctx,
-      speed: Math.floor(Math.random() * 6) + 1,
+      speed: Math.floor(Math.random() * PEPPER_MAX_SPEED) + 1,
       drift: Math.random() < 0.5 ? -1 : 1
     };
     peppers.push(new Pepper(pepperOptions));
@@ -140,6 +165,6 @@ Pepper.prototype.move = function() {
 };
 
 var randomX = function() {
-  var x = Math.floor(Math.random() * 2);
+  var x = Math.floor(Math.random() * PEPPER_MAX_DRIFT);
   return x;
 };

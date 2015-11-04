@@ -30,6 +30,7 @@
       }
 
       window.restartGame = function () {
+        stopParade();
         ReactDOM.unmountComponentAtNode(document.getElementById('app-container'));
         window.cards = new Deck ();
         window.startGame();
