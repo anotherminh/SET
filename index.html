@@ -5,6 +5,7 @@
     <link rel="stylesheet" type="text/css" href="index.css">
     <script src="build/react.js"></script>
     <script src="build/react-dom.js"></script>
+    <script type="text/javascript" src="./parade.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script type="text/javascript" src="./card.js"></script>
     <script type="text/babel" src="./symbol.js.jsx"></script>
@@ -16,6 +17,7 @@
     <title>SET</title>
   </head>
   <body>
+
     <div id="app-container"></div>
     <script type="text/babel">
       window.cards = new Deck ();
@@ -28,6 +30,7 @@
       }
 
       window.restartGame = function () {
+        stopParade();
         ReactDOM.unmountComponentAtNode(document.getElementById('app-container'));
         window.cards = new Deck ();
         window.startGame();

@@ -17,7 +17,7 @@ window.CardComponent = React.createClass({
   },
 
   render: function () {
-    var card = this.props.card
+    var card = this.props.card;
     var symbolCount = card[3];
     var cardView = [];
 

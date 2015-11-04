@@ -76,6 +76,7 @@ window.App = React.createClass({
 
   renderModal: function () {
     if (this.state.gameWon) {
+      startParade();
       return <Modal message="You won!"/>
     }
   },
