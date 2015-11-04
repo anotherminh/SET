@@ -1,12 +1,14 @@
-var _SHAPES = ["A", "B", "C"]
-var _FILLS = ["L", "M", "N"]
-var _COLORS = ["X", "Y", "Z"]
-var _COUNTS = [1, 2, 3]
+var CardConstants = {
+  SHAPES: ["A", "B", "C"],
+  FILLS: ["L", "M", "N"],
+  COLORS:  ["X", "Y", "Z"],
+  COUNTS:  [1, 2, 3]
+};
 
 var Deck = function () {
   this.solution = [];
   this.playableCards = this.getTwelveCards();
-}
+};
 
 Deck.isASet = function (threeCards) {
   var isASet = true,
@@ -24,29 +26,29 @@ Deck.isASet = function (threeCards) {
   }
 
   return isASet;
-}
+};
 
 Deck.allCards = function () {
   var allCards = [];
-  _SHAPES.forEach(function (shape) {
-    _FILLS.forEach(function (fill) {
-      _COLORS.forEach(function (color) {
-        _COUNTS.forEach(function (count) {
+  CardConstants.SHAPES.forEach(function (shape) {
+    CardConstants.FILLS.forEach(function (fill) {
+      CardConstants.COLORS.forEach(function (color) {
+        CardConstants.COUNTS.forEach(function (count) {
           allCards.push(shape + fill + color + count);
-        })
-      })
-    })
-  })
+        });
+      });
+    });
+  });
 
   return allCards;
-}
+};
 
 Deck.solve = function (cards) {
   var solutions = [];
   for (var i = 0; i < (cards.length - 2); i++) {
     for (var j = i + 1; j < (cards.length - 1); j++) {
       for (var k = j; k < cards.length; k++) {
-        var threeCards = [cards[i], cards[j], cards[k]]
+        var threeCards = [cards[i], cards[j], cards[k]];
         if (Deck.isASet(threeCards)) {
           solutions.push(threeCards);
         }
@@ -54,7 +56,7 @@ Deck.solve = function (cards) {
     }
   }
   return solutions;
-}
+};
 
 Deck.prototype.getTwelveCards = function () {
   var playableDeck = [], allCards = Deck.allCards();
@@ -69,10 +71,9 @@ Deck.prototype.getTwelveCards = function () {
     this.solution = solution;
     return playableDeck;
   } else {
-    debugger;
     return this.getTwelveCards().bind(this);
   }
-}
+};
 
 // var three = [ [ 'CMZ1' ], [ 'AMY1' ], [ 'CLX2' ] ];
 // var cards = new Deck ();
