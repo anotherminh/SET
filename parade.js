@@ -38,15 +38,22 @@ function createCanvasOverlay()
 
  function hideCanvas()
  {
-    if (myCanvas)
-    {
-      //myCanvas.style.visibility='hidden';
-      myCanvas.parentNode.style.visibility='hidden';
-    }
+    CANVAS.parentNode.style.visibility='hidden';
+ }
+
+ function showCanvas()
+ {
+   if (myCanvas)
+   {
+     myCanvas.parentNode.style.visibility='visible';
+   }
  }
 
  var startParade = function(){
-   CANVAS = createCanvasOverlay();
+   if (typeof CANVAS === 'undefined') {
+     CANVAS = createCanvasOverlay();
+   }
+   showCanvas();
    var ctx = CANVAS.getContext("2d");
    PARADE = new Parade(ctx);
    PARADE.start();
@@ -77,17 +84,21 @@ var loadImages = function() {
 Parade.prototype.start = function(){
   var that = this;
   loadImages();
+  showCanvas();
   that.addPeppers();
-  var clickInt = setInterval(function(){
+  this.clickInt = setInterval(function(){
     that.click();
   }, 20);
-  var rainInt = setInterval(function(){
+  this.rainInt = setInterval(function(){
     that.addPeppers();
   }, SECONDS_PER_BURST * 1000);
 };
 
 Parade.prototype.stop = function() {
   this.peppers = [];
+  this.ctx.clearRect(0,0,CANVAS.width,CANVAS.height);
+  clearInterval(this.clickInt);
+  clearInterval(this.rainInt);
   hideCanvas();
 };
 
