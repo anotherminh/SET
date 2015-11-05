@@ -109,6 +109,8 @@ body {
   color: #ccc;
   position: absolute;
   right: 10px;
+  top: -15px;
+  padding-bottom: 10px;
 }
 
 .sets-found {
@@ -142,6 +144,9 @@ body {
 
 .won-modal {
   font-size: 22px;
+  padding: 1px;
+  margin-top: -30px;
+  text-align: center;
 }
 
 .instruction-box {
@@ -164,7 +169,7 @@ body {
   position: absolute;
   top: 50px;
   font-size: 15px;
-  left: 36%;
+  left: 35%;
 }
 
 .instructions {
@@ -173,10 +178,10 @@ body {
 
 .play-again {
   position: absolute;
-  bottom: 100px;
-  left: 170px;
+  bottom: 50px;
+  left: 39%;
+  font-weight: bold;
 }
-
 
 .play-again:hover {
   cursor: pointer;

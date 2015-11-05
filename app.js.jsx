@@ -11,7 +11,8 @@ window.App = React.createClass({
             buildingSet: [],
             showNotif: false,
             notif: "",
-            gameWon: false
+            gameWon: false,
+            score: 0
           };
   },
 
@@ -51,7 +52,7 @@ window.App = React.createClass({
       this.setState({
         buildingSet: [],
         showNotif: true,
-        notif: "Found a set! Current score: " + this.calculateScore(),
+        notif: "Found a set!",
         gameWon: gameStatus
       });
     } else {
@@ -63,10 +64,13 @@ window.App = React.createClass({
         notif = "That's not a set. -50 points";
       }
 
+      var currentScore = this.calculateScore();
+
       this.setState({
         buildingSet: [],
         showNotif: true,
-        notif: notif
+        notif: notif,
+        score: currentScore
       });
     }
   },
@@ -145,7 +149,8 @@ window.App = React.createClass({
     return (
       <div className="app">
         <div className="game-stats">
-          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.totalSets()}.
+          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.totalSets()}.<br></br>
+        Score: {this.state.score}
         </div>
         <div className={this.renderNotif()}>{this.state.notif}</div>
         {this.renderModal()}
