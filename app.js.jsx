@@ -1,3 +1,9 @@
+// points deducted for each bad guess
+var BAD_SET_PENALTY = 50;
+// will be divided by average solve time in seconds
+//
+var TOP_SCORE = 60000;
+
 window.App = React.createClass({
   getInitialState: function () {
     return {
@@ -6,7 +12,13 @@ window.App = React.createClass({
             showNotif: false,
             notif: "",
             gameWon: false
-           }
+          };
+  },
+
+  componentDidMount: function() {
+    this.startTime = Date.now();
+    this.highScore = 0;
+    this.badSets = 0;
   },
 
   gameWon: function () {
@@ -27,7 +39,7 @@ window.App = React.createClass({
         duplicate = true;
         isASet = false;
       }
-    })
+    });
 
     this.handleCurrentSetStatus(isASet, duplicate);
   },
@@ -39,7 +51,7 @@ window.App = React.createClass({
       this.setState({
         buildingSet: [],
         showNotif: true,
-        notif: "Found a set!",
+        notif: "Found a set! Current score: " + this.calculateScore(),
         gameWon: gameStatus
       });
     } else {
@@ -47,7 +59,8 @@ window.App = React.createClass({
       if (dup) {
         notif = "You already found that set.";
       } else {
-        notif = "That's not a set.";
+        this.badSets ++;
+        notif = "That's not a set. -50 points";
       }
 
       this.setState({
@@ -75,10 +88,27 @@ window.App = React.createClass({
     this.forceUpdate();
   },
 
+  calculateScore: function() {
+    var score = this.finishTimeInSeconds() / this.state.setsFound.length;  // avg ms per currently discovered set
+    score = parseInt(TOP_SCORE / score);
+    if (score > this.highScore) {this.highScore = score;}
+    return score - (this.badSets * BAD_SET_PENALTY);
+  },
+
+  finishTimeInSeconds: function() {
+    return (Date.now() - this.startTime) / 1000;
+  },
+
   renderModal: function () {
     if (this.state.gameWon) {
       startParade();
-      return <Modal message="You won!"/>
+      var winMessage =
+      <div className="won-modal">
+        <h1>You won!</h1><br></br>
+        Your Score: {this.calculateScore()}<br></br>
+        High Score: {this.highScore}
+      </div>;
+      return <Modal message={winMessage}/>
     }
   },
 
@@ -107,12 +137,15 @@ window.App = React.createClass({
     }
   },
 
+  totalSets: function(){
+    return this.props.cards.solution.length;
+  },
+
   render: function () {
-    var totalSets = this.props.cards.solution.length;
     return (
       <div className="app">
         <div className="game-stats">
-          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {totalSets}.
+          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.totalSets()}.
         </div>
         <div className={this.renderNotif()}>{this.state.notif}</div>
         {this.renderModal()}

@@ -140,6 +140,10 @@ body {
   top: 180px;
 }
 
+.won-modal {
+  font-size: 22px;
+}
+
 .instruction-box {
   width: 800px;
   height: 422px;
@@ -158,9 +162,9 @@ body {
 
 .modal-message {
   position: absolute;
-  top: 80px;
-  font-size: 60px;
-  left: 100px;
+  top: 50px;
+  font-size: 15px;
+  left: 36%;
 }
 
 .instructions {
