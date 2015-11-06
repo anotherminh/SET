@@ -22,8 +22,8 @@ window.App = React.createClass({
     this.badSets = 0;
   },
 
-  gameWon: function () {
-    if (this.state.setsFound.length == this.props.cards.solution.length) {
+  gameWon: function (setsFound) {
+    if (setsFound.length == this.props.cards.solution.length) {
       return true;
     } else {
       return false;
@@ -46,33 +46,33 @@ window.App = React.createClass({
   },
 
   handleCurrentSetStatus: function (status, dup) {
+    var notif;
+    var setsFound = this.state.setsFound;
+    var gameStatus = this.state.gameStatus;
     if (status) {
-      this.state.setsFound.push(this.state.buildingSet);
-      var gameStatus = this.gameWon();
-      this.setState({
-        buildingSet: [],
-        showNotif: true,
-        notif: "Found a set!",
-        gameWon: gameStatus
-      });
+      setsFound.push(this.state.buildingSet);
+      gameStatus = this.gameWon(setsFound);
+      notif = "Found a set!";
     } else {
-      var notif;
       if (dup) {
         notif = "You already found that set.";
       } else {
         this.badSets ++;
         notif = "That's not a set. -50 points";
       }
-
-      var currentScore = this.calculateScore();
-
-      this.setState({
-        buildingSet: [],
-        showNotif: true,
-        notif: notif,
-        score: currentScore
-      });
     }
+    this.setState({
+      buildingSet: [],
+      showNotif: true,
+      notif: notif,
+      setsFound: setsFound,
+      gameWon: gameStatus
+    });
+    this.updateScore();
+  },
+
+  updateScore: function() {
+    this.setState({score: this.calculateScore()});
   },
 
   handleClick: function (cardValue) {
