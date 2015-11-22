@@ -12,14 +12,14 @@ window.App = React.createClass({
             showNotif: false,
             notif: "",
             gameWon: false,
-            score: 0
+            averageTime: ""
           };
   },
 
   componentDidMount: function() {
     this.startTime = Date.now();
-    this.highScore = 0;
-    this.badSets = 0;
+    this.bestTime = "";
+    // this.badSets = 0;
   },
 
   gameWon: function (setsFound) {
@@ -28,6 +28,13 @@ window.App = React.createClass({
     } else {
       return false;
     }
+  },
+
+  calculateBestTime: function() {
+    if (this.bestTime === "" || this.state.averageTime < this.bestTime) {
+      this.bestTime = this.state.averageTime;
+    }
+    return this.bestTime;
   },
 
   checkCurrentSet: function () {
@@ -53,12 +60,13 @@ window.App = React.createClass({
       setsFound.push(this.state.buildingSet);
       gameStatus = this.gameWon(setsFound);
       notif = "Found a set!";
+      this.updateScore();
     } else {
       if (dup) {
         notif = "You already found that set.";
       } else {
         this.badSets ++;
-        notif = "That's not a set. -50 points";
+        notif = "That's not a set.";
       }
     }
     this.setState({
@@ -68,11 +76,10 @@ window.App = React.createClass({
       setsFound: setsFound,
       gameWon: gameStatus
     });
-    this.updateScore();
   },
 
   updateScore: function() {
-    this.setState({score: this.calculateScore()});
+    this.setState({averageTime: this.calculateScore()});
   },
 
   handleClick: function (cardValue) {
@@ -93,14 +100,17 @@ window.App = React.createClass({
   },
 
   calculateScore: function() {
-    var score = this.finishTimeInSeconds() / this.state.setsFound.length;  // avg ms per currently discovered set
-    score = parseInt(TOP_SCORE / score);
-    if (score > this.highScore) {this.highScore = score;}
-    return score - (this.badSets * BAD_SET_PENALTY);
+    var totalTime = (Date.now() - this.startTime) / 1000;  // avg seconds per currently discovered set
+    console.log("total time: " + totalTime);
+    var avgTime = totalTime / this.state.setsFound.length;
+    console.log(avgTime);
+    return avgTime;
   },
 
-  finishTimeInSeconds: function() {
-    return (Date.now() - this.startTime) / 1000;
+  lastFinishTimeInSeconds: function() {
+    var latestTime = (Date.now() - this.startTime) / 1000;
+    this.startTime = Date.now();
+    return latestTime;
   },
 
   renderModal: function () {
@@ -109,8 +119,8 @@ window.App = React.createClass({
       var winMessage =
       <div className="won-modal">
         <h1>You won!</h1><br></br>
-        Your Score: {this.calculateScore()}<br></br>
-        High Score: {this.highScore}
+        Time Per Set: {this.calculateScore() + " seconds"}<br></br>
+      Best Time Per Set: {this.calculateBestTime() + " seconds"}
       </div>;
       return <Modal message={winMessage}/>
     }
@@ -146,11 +156,15 @@ window.App = React.createClass({
   },
 
   render: function () {
+    var avgTime;
+    if (this.state.setsFound.length > 0) {
+      avgTime = <span>Time Per Set: {this.state.averageTime} seconds</span>
+    }
     return (
       <div className="app">
         <div className="game-stats">
           Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.totalSets()}.<br></br>
-        Score: {this.state.score}
+        {avgTime}
         </div>
         <div className={this.renderNotif()}>{this.state.notif}</div>
         {this.renderModal()}
