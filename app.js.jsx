@@ -1,3 +1,9 @@
+// points deducted for each bad guess
+var BAD_SET_PENALTY = 50;
+// will be divided by average solve time in seconds
+//
+var TOP_SCORE = 60000;
+
 window.App = React.createClass({
   getInitialState: function () {
     return {
@@ -5,16 +11,30 @@ window.App = React.createClass({
             buildingSet: [],
             showNotif: false,
             notif: "",
-            gameWon: false
-           }
+            gameWon: false,
+            averageTime: ""
+          };
   },
 
-  gameWon: function () {
-    if (this.state.setsFound.length == this.props.cards.solution.length) {
+  componentDidMount: function() {
+    this.startTime = Date.now();
+    this.bestTime = "";
+    // this.badSets = 0;
+  },
+
+  gameWon: function (setsFound) {
+    if (setsFound.length == this.props.cards.solution.length) {
       return true;
     } else {
       return false;
     }
+  },
+
+  calculateBestTime: function() {
+    if (this.bestTime === "" || this.state.averageTime < this.bestTime) {
+      this.bestTime = this.state.averageTime;
+    }
+    return this.bestTime;
   },
 
   checkCurrentSet: function () {
@@ -27,35 +47,39 @@ window.App = React.createClass({
         duplicate = true;
         isASet = false;
       }
-    })
+    });
 
     this.handleCurrentSetStatus(isASet, duplicate);
   },
 
   handleCurrentSetStatus: function (status, dup) {
+    var notif;
+    var setsFound = this.state.setsFound;
+    var gameStatus = this.state.gameStatus;
     if (status) {
-      this.state.setsFound.push(this.state.buildingSet);
-      var gameStatus = this.gameWon();
-      this.setState({
-        buildingSet: [],
-        showNotif: true,
-        notif: "Found a set!",
-        gameWon: gameStatus
-      });
+      setsFound.push(this.state.buildingSet);
+      gameStatus = this.gameWon(setsFound);
+      notif = "Found a set!";
+      this.updateScore();
     } else {
-      var notif;
       if (dup) {
         notif = "You already found that set.";
       } else {
+        this.badSets ++;
         notif = "That's not a set.";
       }
-
-      this.setState({
-        buildingSet: [],
-        showNotif: true,
-        notif: notif
-      });
     }
+    this.setState({
+      buildingSet: [],
+      showNotif: true,
+      notif: notif,
+      setsFound: setsFound,
+      gameWon: gameStatus
+    });
+  },
+
+  updateScore: function() {
+    this.setState({averageTime: this.calculateScore()});
   },
 
   handleClick: function (cardValue) {
@@ -75,10 +99,30 @@ window.App = React.createClass({
     this.forceUpdate();
   },
 
+  calculateScore: function() {
+    var totalTime = (Date.now() - this.startTime) / 1000;  // avg seconds per currently discovered set
+    console.log("total time: " + totalTime);
+    var avgTime = totalTime / this.state.setsFound.length;
+    console.log(avgTime);
+    return avgTime;
+  },
+
+  lastFinishTimeInSeconds: function() {
+    var latestTime = (Date.now() - this.startTime) / 1000;
+    this.startTime = Date.now();
+    return latestTime;
+  },
+
   renderModal: function () {
     if (this.state.gameWon) {
       startParade();
-      return <Modal message="You won!"/>
+      var winMessage =
+      <div className="won-modal">
+        <h1>You won!</h1><br></br>
+        Time Per Set: {this.calculateScore() + " seconds"}<br></br>
+      Best Time Per Set: {this.calculateBestTime() + " seconds"}
+      </div>;
+      return <Modal message={winMessage}/>
     }
   },
 
@@ -107,12 +151,20 @@ window.App = React.createClass({
     }
   },
 
+  totalSets: function(){
+    return this.props.cards.solution.length;
+  },
+
   render: function () {
-    var totalSets = this.props.cards.solution.length;
+    var avgTime;
+    if (this.state.setsFound.length > 0) {
+      avgTime = <span>Time Per Set: {this.state.averageTime} seconds</span>
+    }
     return (
       <div className="app">
         <div className="game-stats">
-          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {totalSets}.
+          Found <span className="sets-found">{this.state.setsFound.length}</span> set(s) out of {this.totalSets()}.<br></br>
+        {avgTime}
         </div>
         <div className={this.renderNotif()}>{this.state.notif}</div>
         {this.renderModal()}
